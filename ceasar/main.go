@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
-	"strings"
 )
 
-const lower = "abcdefghijklmnopqrstuvwxyz"
-const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const minLower = 'a'
+const maxLower = 'z'
+const minUpper = 'A'
+const maxUpper = 'Z'
+
+const lowerRange = maxLower - minLower + 1
+const upperRange = maxUpper - minUpper + 1
 
 func main() {
 	var length, delta int
@@ -22,25 +26,16 @@ func main() {
 		panic(err)
 	}
 
-	ret := ""
-	for _, ch := range input {
+	ret := make([]rune, len(input))
+	for i, ch := range input {
 		switch {
-		case strings.ContainsRune(lower, ch):
-			ret += string(rotate(ch, delta, []rune(lower)))
-		case strings.ContainsRune(upper, ch):
-			ret += string(rotate(ch, delta, []rune(upper)))
+		case ch >= minLower && ch <= maxLower:
+			ret[i] = rune(minLower + (delta+int(ch-minLower))%lowerRange)
+		case ch >= minUpper && ch <= maxUpper:
+			ret[i] = rune(minUpper + (delta+int(ch-minUpper))%upperRange)
 		default:
-			ret += string(ch)
+			ret[i] = ch
 		}
 	}
-	fmt.Println(ret)
-}
-
-func rotate(s rune, delta int, key []rune) rune {
-	idx := strings.IndexRune(string(key), s)
-	if idx < 0 {
-		panic("idx < 0")
-	}
-	idx = (idx + delta) % len(key)
-	return key[idx]
+	fmt.Println(string(ret))
 }
